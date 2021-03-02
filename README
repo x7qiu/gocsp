@@ -1,0 +1,8 @@
+#Complie and Run
+```
+
+go build
+./gocsp client --host google.com:443
+./gocsp client --host google.com:443 -x http://foo:bar@localhost:3130
+
+```
