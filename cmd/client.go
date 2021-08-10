@@ -73,9 +73,6 @@ var (
 
 )
 
-// ProxyFunc is used to simplify proxy detection and setting proxies in the client.
-type ProxyFunc func(*http.Request) (*url.URL, error)
-
 const gocspTimeOut = 10 * time.Second
 
 // ConnectAndValidate does the following things:
