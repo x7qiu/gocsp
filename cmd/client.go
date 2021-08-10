@@ -90,7 +90,7 @@ func connectAndVerify(cmd *cobra.Command, args []string) {
 		log.Fatalf("Error parsing server: %s.\n", err.Error())
 	}
 
-	// parse proxy
+	// Parse proxy. This logic is needed because url.Parse and url.ParseRequestURI do not return nil for empty string.
 	var proxyURL *url.URL
 	if proxy == ""{
 		proxyURL = nil
@@ -100,8 +100,6 @@ func connectAndVerify(cmd *cobra.Command, args []string) {
 			log.Fatalf("Error parsing proxy: %s.\n", err.Error())
 		}
 	}
-
-	//log.Println("debug:proxyURL:", util.PrettyPrint(proxyURL))
 
 	// custom CA
 	CA, err := util.LoadCA(CAFile)
@@ -169,7 +167,6 @@ func checkRevocation(proxyURL *url.URL, verifiedChains [][]*x509.Certificate) (e
 
 // Check if a cert is revoked. It is considered valid if 1) CRL check passes 2) CRL is empty and OCSP check passes
 func isCertRevoked(cert *x509.Certificate, issuer *x509.Certificate, proxyURL *url.URL, certName string) error {
-	log.Println("debug:proxyURL:", util.PrettyPrint(proxyURL))
 	// CRL check; multiple CRL points for a single cert is possible; we only check the first one for now
 	for _, CDP := range cert.CRLDistributionPoints {
 		crl, err := fetchCRL(CDP, proxyURL)
