@@ -45,7 +45,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: connectAndVerify,
+	Run: connectAndValidate,
 }
 
 func init() {
@@ -78,11 +78,11 @@ type ProxyFunc func(*http.Request) (*url.URL, error)
 
 const gocspTimeOut = 10 * time.Second
 
-// ConnectAndVerify does the following things:
+// ConnectAndValidate does the following things:
 // 1. Connect to host, initiate the ssl handshake process to get the cert chain from server
 // 2. Triggers a callback function where we examine the revocation status of each cert
 // 3. Goes over each cert, check its CRL or OCSP status
-func connectAndVerify(cmd *cobra.Command, args []string) {
+func connectAndValidate(cmd *cobra.Command, args []string) {
 
 	// hostPort is not expected to have a scheme, so do not use url.Parse()
 	serverHost, serverPort, err := net.SplitHostPort(server)
@@ -141,7 +141,7 @@ func checkRevocation(proxyURL *url.URL, verifiedChains [][]*x509.Certificate) (e
 			if i+1 < len(chain) {
 				nextCert = chain[i+1]
 			} else if cert.IsCA {
-				log.Println("Reached a trusted CA. Certificate chain is verified.")
+				log.Println("Reached a trusted CA. Certificate chain is validated.")
 				return nil // we found one good chain. This is the only place a good cert chain should return
 			} else {
 				log.Println("Warning: CA certificate is missing from the current certificate chain. Trying the next chain if there is one.")
@@ -162,6 +162,7 @@ func checkRevocation(proxyURL *url.URL, verifiedChains [][]*x509.Certificate) (e
 			}
 		}
 	}
+	log.Println("Certificate Validation Failed.")
 	return ErrNotValidated
 }
 
@@ -181,7 +182,7 @@ func isCertRevoked(cert *x509.Certificate, issuer *x509.Certificate, proxyURL *u
 
 		for _, revoked := range crl.TBSCertList.RevokedCertificates {
 			if cert.SerialNumber.Cmp(revoked.SerialNumber) == 0 {
-				log.Println("Found a match on CRL. This certificate has been revoked.\n")
+				log.Println("Found a match on CRL. This certificate has been revoked.")
 				return errors.New("revoked")
 			}
 		}
