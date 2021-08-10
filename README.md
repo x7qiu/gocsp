@@ -1,4 +1,10 @@
-#Complie and Run
+gocsp is a command line tool to check the revocation status of the certificate from a webserver. 
+It was originally written to check the OCSP status only, hence the name. 
+CDP (CRL Distribution Point) checks were added because intermediate certificates are no longer required to include an OCSP server field.
+[See this article from letsencrypt for more details](https://letsencrypt.org/2020/09/17/new-root-and-intermediates.html#why-we-didn-t-issue-an-ocsp-responder)
+
+
+## Compile and Run
 ```
 go build
 ```
